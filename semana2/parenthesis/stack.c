@@ -10,14 +10,17 @@ struct stack
     int elements[MAX_LENGTH];
 };
 
-Stack *stack_new() {
-    Stack* stack = (Stack*) malloc(sizeof(Stack));
+Stack *stack_new()
+{
+    Stack *stack = (Stack *)malloc(sizeof(Stack));
     stack->size = 0;
     return stack;
 }
 
-void stack_push(Stack *stack, int value) {
-    if (stack->size == MAX_LENGTH) {
+void stack_push(Stack *stack, int value)
+{
+    if (stack->size == MAX_LENGTH)
+    {
         printf("Error! Exceeded stack max capacity.\n");
         exit(1);
     }
@@ -26,21 +29,25 @@ void stack_push(Stack *stack, int value) {
     stack->size++;
 }
 
-int stack_pop(Stack *stack) {
-    if (stack_is_empty(stack)) {
+int stack_pop(Stack *stack)
+{
+    if (stack_is_empty(stack))
+    {
         printf("Error! Stack is empty.\n");
         exit(1);
     }
 
-    int element = stack->elements[stack->size-1];
+    int element = stack->elements[stack->size - 1];
     stack->size--;
     return element;
 }
 
-int stack_is_empty(Stack *stack) {
+int stack_is_empty(Stack *stack)
+{
     return stack->size == 0;
 }
 
-int stack_free(Stack *stack) {
+int stack_free(Stack *stack)
+{
     free(stack);
 }
