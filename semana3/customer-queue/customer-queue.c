@@ -1,31 +1,92 @@
 #include "stdio.h"
 #include "stdlib.h"
+#include "string.h"
 #include "customer-queue.h"
 
-#define NAME_MAX_LENGTH 100
-
-struct customer {
-    char name[80];
+struct customer
+{
+    char name[NAME_MAX_LENGTH];
     int amount;
 };
 
 typedef struct node
 {
     Customer customer;
-    Node *next;
+    struct node *next;
 } Node;
 
-struct queue {
+struct queue
+{
     Node *start;
     Node *end;
 };
 
-Queue *queue_new() {}
+Queue *queue_new()
+{
+    Queue *queue = malloc(sizeof(Queue));
+    queue->start = queue->end = NULL;
+    return queue;
+}
 
-void queue_put(Queue *queue, Customer element) {}
+void queue_put(Queue *queue, char name[NAME_MAX_LENGTH], int amount)
+{
+    Node *node = malloc(sizeof(Node));
+    strcpy(node->customer.name, name);
+    node->customer.amount = amount;
 
-Customer queue_take(Queue *queue) {}
+    node->next = NULL;
 
-int queue_is_empty(Queue *queue) {}
+    if (queue_is_empty(queue))
+    {
+        queue->start = queue->end = node;
+        return;
+    }
 
-void queue_free(Queue *queue) {}
+    queue->end->next = node;
+    queue->end = node;
+}
+
+Customer queue_take(Queue *queue)
+{
+    Customer customer = queue->start->customer;
+    queue->start = queue->start->next;
+    free(queue->start);
+    return customer;
+}
+
+int queue_is_empty(Queue *queue)
+{
+    return queue->start == NULL;
+}
+
+void queue_free(Queue *queue)
+{
+    Node *current = queue->start;
+    while (current != NULL)
+    {
+        Node *next = current->next;
+        free(current);
+        current = next;
+    }
+    free(queue);
+}
+
+int atendimentoCaixaBanco(Queue *queue, int *customerCounter)
+{
+    int depositsAmountCount = 0;
+
+    Node *current = queue->start;
+    while (current != NULL)
+    {
+        (*customerCounter)++;
+        depositsAmountCount += current->customer.amount;
+        printf(
+            "Cliente %d - %s atendido, deposito de %d reais\n",
+            *customerCounter,
+            current->customer.name,
+            current->customer.amount);
+        current = current->next;
+    }
+
+    return depositsAmountCount;
+}
