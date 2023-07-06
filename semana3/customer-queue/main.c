@@ -4,12 +4,22 @@
 
 int main() {
     Queue *q = queue_new();
-    queue_put(q, "Pedro", 1000);
-    queue_put(q, "Ana", 2000);
-    queue_put(q, "Alex", 3000);
+
+    char name[80];
+    int amount;
+
+    while (scanf(" %s", name) > 0)
+    {
+        scanf(" %d", &amount);
+        queue_put(q, name, amount);
+    }
 
     int count = 0;
-    atendimentoCaixaBanco(q, &count);
-    printf("count: %d\n", count);
+    int sum = atendimentoCaixaBanco(q, &count);
+
+    printf("Total de clientes: %d\n", count);
+    printf("Deposito total: %d reais\n", sum);
+
+    queue_free(q);
     return 0;
 }
