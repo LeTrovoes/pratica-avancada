@@ -16,7 +16,7 @@ int last_occurence(char *s, char c) {
 int main() {
 
     char my_word[] = "Rio de Janeiro";
-    int last_pos = last_occurence(my_word, 'o');
+    int last_pos = last_occurence(my_word, 'i');
 
     printf("%d\n", last_pos);
 
