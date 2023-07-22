@@ -5,26 +5,27 @@
 #define INITIAL_SIZE 2
 
 struct queue {
-    int start;
+    int head;
     int size;
     int capacity;
-    char *elements;
+    char *vector;
 };
 
 void *double_queue(Queue *q);
 void *halve_queue(Queue *q);
+void change_capacity(Queue *q, int new_capacity);
 
 Queue *queue_new() {
     Queue* queue = malloc(sizeof(struct queue));
-    char* array = malloc(sizeof(char) * INITIAL_SIZE);
+    char* vector = malloc(sizeof(char) * INITIAL_SIZE);
 
-    if (array == NULL) {
+    if (vector == NULL) {
         printf("Falha ao alocar memória!\n");
         exit(1);
     }
 
-    queue->elements = array;
-    queue->start = 0;
+    queue->vector = vector;
+    queue->head = 0;
     queue->size = 0;
     queue->capacity = INITIAL_SIZE;
 
@@ -32,19 +33,19 @@ Queue *queue_new() {
 }
 
 void queue_push(Queue *q, char element) {
-    if (q->start + q->size == q->capacity) {
-        printf("double_queue\n");
+    if (q->size + 1 == q->capacity) {
         double_queue(q);
     }
 
-    printf("%d %c\n", q->size, element);
-    q->elements[q->size] = element;
+    int next_pos = queue_tail(q);
+    q->vector[next_pos] = element;
     q->size++;
 }
 
 char queue_pop(Queue *q) {
-    char element = q->elements[q->start];
-    q->start++;
+    char element = q->vector[q->head];
+    q->vector[q->head] = ' ';
+    q->head = (q->head + q->capacity + 1) % q->capacity;
     q->size--;
 
     if (q->size == q->capacity/4) {
@@ -55,11 +56,11 @@ char queue_pop(Queue *q) {
 }
 
 int queue_start(Queue *q) {
-    return q->start;
+    return q->head;
 }
 
-int queue_end(Queue *q) {
-    return q->start + q->size;
+int queue_tail(Queue *q) {
+    return (q->head+q->size) % q->capacity;
 }
 
 int queue_capacity(Queue *q) {
@@ -67,29 +68,69 @@ int queue_capacity(Queue *q) {
 }
 
 void queue_free(Queue *q) {
+    free(q->vector);
     free(q);
 }
 
 void *double_queue(Queue *q) {
     int new_capacity = q->capacity * 2;
-    char *new_array = realloc(q->elements, new_capacity * sizeof(char));
-    if (new_array == NULL) {
-        printf("Falha ao alocar memória!\n");
-        exit(1);
-    }
-
-    q->elements = new_array;
-    q->capacity = new_capacity;
+    change_capacity(q, new_capacity);
 }
 
 void *halve_queue(Queue *q) {
     int new_capacity = q->capacity / 2;
-    char *new_array = realloc(q->elements, new_capacity * sizeof(char));
-    if (new_array == NULL) {
+    change_capacity(q, new_capacity);
+}
+
+void change_capacity(Queue *q, int new_capacity) {
+    char *new_vector = malloc(new_capacity * sizeof(char));
+
+    if (new_vector == NULL) {
         printf("Falha ao alocar memória!\n");
         exit(1);
     }
 
-    q->elements = new_array;
+    for (int i = 0; i < q->size; i++) {
+        int source_index = (i+q->head+q->capacity)%q->capacity;
+        new_vector[i] = q->vector[source_index];
+    }
+
+    free(q->vector);
+    q->vector = new_vector;
+    q->head = 0;
     q->capacity = new_capacity;
+}
+
+void queue_debug(Queue *q) {
+    printf("index:  ");
+    for (int i = 0; i < q->capacity; i++)
+    {
+        printf("%2d ", i);
+    }
+
+    printf("\ncontent:");
+    for (int i = 0; i < q->capacity; i++)
+    {
+        char content = q->vector[i];
+        if (content == ' ' || content == 0) content = '.';
+        printf(" %c ", content);
+    }
+
+    printf("\n         ");
+
+    printf("H: %d  T: %d", q->head, queue_tail(q));
+
+    // int tail = queue_tail(q);
+    // for (int i = 0; i < q->capacity; i++)
+    // {
+
+    //     if (i == q->head) {
+    //         printf("H  ");
+    //     } else if (i == tail) {
+    //         printf("T  ");
+    //     } else {
+    //         printf("   ");
+    //     }
+    // }
+    printf("\n");
 }

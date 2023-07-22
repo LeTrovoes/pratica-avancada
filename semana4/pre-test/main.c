@@ -15,23 +15,8 @@ int main() {
             printf("enqueued %c\n", input);
         }
 
-        printf(
-            "start: %d end: %d cap: %d\n",
-            queue_start(queue),
-            queue_end(queue),
-            queue_capacity(queue)
-        );
+        queue_debug(queue);
     }
+
+    queue_free(queue);
 }
-
-/*
-A B C D E F G H
-. B
-. . C
-. . D
-. . . E
-. . . . F
-. . . . . G
-H .
-
-*/
