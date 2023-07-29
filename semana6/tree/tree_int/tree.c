@@ -4,7 +4,7 @@
 
 struct tree
 {
-    char element;
+    int element;
     Tree *left;
     Tree *right;
 };
@@ -14,10 +14,10 @@ Tree *tree_new_empty()
     return NULL;
 }
 
-Tree *tree_new(char c, Tree *l, Tree *r)
+Tree *tree_new(int el, Tree *l, Tree *r)
 {
     Tree *node = malloc(sizeof(Tree));
-    node->element = c;
+    node->element = el;
     node->left = l;
     node->right = r;
     return node;
@@ -38,7 +38,7 @@ int tree_is_empty(Tree *t)
     return t == NULL;
 }
 
-int tree_contains(Tree *t, char el)
+int tree_contains(Tree *t, int el)
 {
     if (tree_is_empty(t))
         return 0;
@@ -79,4 +79,12 @@ int tree_height(Tree *t)
     int left_height = tree_height(t->left);
     int right_height = tree_height(t->right);
     return left_height > right_height ? left_height + 1 : right_height + 1;
+}
+
+int tree_max_cost(Tree *t) {
+    if (tree_is_empty(t))
+        return 0;
+    int left_cost = tree_max_cost(t->left);
+    int right_cost = tree_max_cost(t->right);
+    return left_cost > right_cost ? left_cost + t->element : right_cost + t->element;
 }
