@@ -12,4 +12,4 @@ add_executable(breadth
         queue.c
         main.c)
 
-file(COPY ./grafo.dat DESTINATION ${CMAKE_BINARY_DIR}/semana10)
+file(COPY ./grafo.dat DESTINATION ${CMAKE_BINARY_DIR}/semana10/breadth)
