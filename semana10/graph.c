@@ -1,20 +1,14 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "assert.h"
-#include "./graph.h"
+#include "graph.h"
+#include "queue.h"
 
-struct _viz
+struct viz
 {
   int label;
   float weigth;
   Viz *prox;
-};
-
-struct _graph
-{
-  int nodes; // numero de nos ou vertices
-  int edges; // numero de arestas
-  Viz **viz; // viz[i] aponta para a lista de arestas vizinhas do no i
 };
 
 static Viz *criaViz(Viz *head, int noj, float weigth)
@@ -102,4 +96,58 @@ void graph_show(char *title, Graph *graph)
       printf("NULL\n");
     }
   }
+}
+
+void search_result_free(SearchResult *r) {
+    free(r->colors);
+    free(r->distances);
+    free(r->predecessors);
+}
+
+SearchResult *breadth_search(Graph *g, int start)
+{
+    int *colors = malloc(g->nodes * sizeof(int));
+    assert(colors);
+    int *distances = malloc(g->nodes * sizeof(int));
+    assert(distances);
+    int *predecessors = malloc(g->nodes * sizeof(int));
+    assert(predecessors);
+
+    for (int i = 0; i < g->nodes; i++)
+    {
+        colors[i] = COLOR_WHITE;
+        distances[i] = -1;
+        predecessors[i] = -1;
+    }
+
+    colors[start] = COLOR_GRAY;
+    distances[start] = 0;
+    predecessors[start] = -1;
+
+    Queue *queue = queue_new(g->nodes);
+    queue_push(queue, start);
+
+    while (!queue_empty(queue))
+    {
+        int node_queue = queue_pop(queue);
+        for (Viz *neighbor = g->viz[node_queue]; neighbor != NULL; neighbor = neighbor->prox)
+        {
+            int node_n = neighbor->label;
+            if (colors[node_n] != COLOR_WHITE)
+                continue;
+            colors[node_n] = COLOR_GRAY;
+            distances[node_n] = distances[node_queue] + 1;
+            predecessors[node_n] = node_queue;
+            queue_push(queue, node_n);
+        }
+        colors[node_queue] = COLOR_BLACK;
+    }
+
+    queue_free(queue);
+    SearchResult *result = malloc(sizeof(SearchResult));
+    assert(result);
+    result->colors = colors;
+    result->distances = distances;
+    result->predecessors = predecessors;
+    return result;
 }

@@ -1,27 +1,27 @@
-#include "./graph.h"
-#include "./breadth.c"
+#include "graph.h"
+#include "stdio.h"
 
 int main()
 {
     Graph *g = graph_read("grafo.dat");
-    char texto[] = "\nMeu grafo\n";
-    graph_show(texto, g);
+    char text[] = "\nMeu grafo\n";
+    graph_show(text, g);
 
     SearchResult *result = breadth_search(g, 0);
 
     printf("predecessors: ");
     for (int i = 0; i < g->nodes; i++)
-        printf("%d ", result->predecessors[i]);
+        printf("%2d ", result->predecessors[i]);
     printf("\n");
 
-    printf("colors: ");
+    printf("      colors: ");
     for (int i = 0; i < g->nodes; i++)
-        printf("%d ", result->colors[i]);
+        printf("%2d ", result->colors[i]);
     printf("\n");
 
-    printf("distances: ");
+    printf("   distances: ");
     for (int i = 0; i < g->nodes; i++)
-        printf("%d ", result->distances[i]);
+        printf("%2d ", result->distances[i]);
     printf("\n");
 
     graph_free(g);
