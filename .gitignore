@@ -6,3 +6,4 @@
 !*.md
 !*.dat
 !.gitignore
+cmake-build-debug/*
