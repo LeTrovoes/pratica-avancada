@@ -3,8 +3,6 @@ project(breadth C)
 
 set(CMAKE_C_STANDARD 11)
 
-# include_directories(semana10)
-
 add_executable(breadth
         graph.h
         queue.h
