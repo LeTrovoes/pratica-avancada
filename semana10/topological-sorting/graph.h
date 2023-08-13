@@ -22,6 +22,22 @@ void grafoMostra(char *title, Grafo *grafo);
 
 Grafo *grafoLibera(Grafo *grafo);
 
-void dfs(Grafo *grafo);
+// Depth Search
+
+typedef struct depthSearchResult {
+    int *visited;
+    int *timeEnter;
+    int *timeExit;
+    char *color;
+} DepthSearchResult;
+
+typedef struct node {
+    int value;
+    struct node *next;
+} LLNode;
+
+// void dfs(Grafo *grafo);
+
+LLNode *topological_sort(Grafo *grafo);
 
 #endif

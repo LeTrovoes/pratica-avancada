@@ -3,8 +3,6 @@
 #include "assert.h"
 #include "graph.h"
 
-void dfs_visit(Grafo *grafo, int v, int *visited, int *timeEnter, int *timeExit, char *color, int *time);
-
 static Viz *criaViz(Viz *head, int noj, float peso) {
 /* insere vizinho no inicio da lista */
     Viz *no = (Viz *) malloc(sizeof(Viz));
@@ -27,7 +25,7 @@ static Grafo *grafoCria(int nv, int na) {
 }
 
 Grafo *grafoLe(char *filename) {
-/* cria grafo n�o orientado - sup�e que arquivo est� correto! */
+/* cria grafo não orientado - supõe que arquivo está correto! */
 
     FILE *arq = fopen(filename, "rt");
     int nv, na, no1, no2 = 0;
@@ -80,28 +78,30 @@ void grafoMostra(char *title, Grafo *grafo) {
     }
 }
 
-void dfs_visit(Grafo *grafo, int v, int *visited, int *timeEnter, int *timeExit, char *color, int *time) {
-    //visited[v] = 1;
+LLNode *dfs_visit(Grafo *grafo, int v, int *visited, int *timeEnter, int *timeExit, char *color, int *time, LLNode *sorting) {
     color[v] = 'C';
     (*time)++;
     timeEnter[v] = *time;
-    printf("v: %3d %3c \n", v, color[v]);
     for (Viz *w = grafo->viz[v]; w != NULL; w = w->prox) {
         if (color[w->noj] == 'B') {
             visited[w->noj] = v;
-            printf("\t%3d - %3d: %3c predecessor: %3d\n", v, w->noj, color[w->noj], visited[w->noj]);
-            dfs_visit(grafo, w->noj, visited, timeEnter, timeExit, color, time);
+            sorting = dfs_visit(grafo, w->noj, visited, timeEnter, timeExit, color, time, sorting);
         }
     }
     color[v] = 'P';
     timeExit[v] = ++(*time);
-    printf("%3d:>(%3d,%3d,%3c) \n", v, timeEnter[v], timeExit[v], color[v]);
+
+    LLNode *newNode = malloc(sizeof(LLNode));
+    newNode->next = sorting;
+    newNode->value = v;
+
+    return newNode;
 }
 
-void dfs(Grafo *grafo) {
-    if (!grafo) return;
+LLNode *topological_sort(Grafo *grafo) {
+    if (!grafo) return NULL;
 
-    //initialize vector of visited
+    // initialize vector of visited
     int visited[grafo->nv];
     int timeEnter[grafo->nv];
     int timeExit[grafo->nv];
@@ -112,9 +112,13 @@ void dfs(Grafo *grafo) {
         visited[i] = -1;
         color[i] = 'B';
     }
+
+    LLNode *topological_sort = NULL;
+
     for (int i = 0; i < grafo->nv; i++) {
         if (color[i] == 'B') {
-            dfs_visit(grafo, i, visited, timeEnter, timeExit, color, &time);
+            topological_sort = dfs_visit(grafo, i, visited, timeEnter, timeExit, color, &time, topological_sort);
         }
     }
+    return topological_sort;
 }
